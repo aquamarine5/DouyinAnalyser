@@ -1,0 +1,6 @@
+{
+    "dependencies": {
+        "puppeteer": "^23.9.0"
+    },
+    "type": "module"
+}
