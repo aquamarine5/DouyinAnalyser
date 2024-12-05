@@ -1,8 +1,11 @@
 {
+  "name": "puppeteer-server",
+  "version": "1.0.0",
   "dependencies": {
     "express": "^4.21.1",
     "jsdom": "^25.0.1",
-    "puppeteer": "^23.9.0"
+    "puppeteer": "^23.9.0",
+    "echarts": "^5.5.1"
   },
   "type": "module"
 }
