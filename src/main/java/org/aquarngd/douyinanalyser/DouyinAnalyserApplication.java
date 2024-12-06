@@ -32,7 +32,7 @@ public class DouyinAnalyserApplication {
     @Scheduled(cron = "0 0 0 * * *")
     public void updateLikeCount() throws IOException, InterruptedException {
         HttpClient httpClient=HttpClient.newHttpClient();
-        SqlRowSet userlist = jdbcTemplate.queryForRowSet("SELECT (`key`,`id`) FROM `userinfo`");
+        SqlRowSet userlist = jdbcTemplate.queryForRowSet("SELECT `key`, `id` FROM userinfo");
         while (userlist.next()) {
             String key = userlist.getString("key");
             HttpRequest request=HttpRequest.newBuilder()
