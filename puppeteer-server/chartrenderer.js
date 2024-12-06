@@ -38,20 +38,31 @@ export function renderChart(data) {
         width: 600,
         height: 400
     });
-
+    categories = []
+    for (let i = 0; i < data.length; i++) {
+        categories.push(data[i].date)
+    }
+    values = []
+    for (let i = 0; i < data.length; i++) {
+        values.push(data[i].likecount)
+    }
     // 配置图表选项
     const option = {
         title: {
             text: '数据统计'
         },
-        tooltip: {},
-        xAxis: {
-            data: ['A', 'B', 'C', 'D', 'E']
+        tooltip: {
+            trigger: 'axis'
         },
-        yAxis: {},
+        xAxis: {
+            data: categories
+        },
+        yAxis: {
+            type: 'value'
+        },
         series: [{
-            type: 'bar',
-            data: data
+            type: 'line',
+            data: values
         }],
         animation: true
     };

@@ -6,6 +6,8 @@ import express from 'express';
 import { getLikeCount } from './analyser.js';
 import { renderChart } from './chartrenderer.js';
 const app = express()
+app.use(express.json())
+
 app.get('/get', async (req, res) => {
     const key = req.query.key;
     if (!key) {
@@ -22,8 +24,8 @@ app.get('/get', async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 });
-app.get("/render", async (req, res) => {
-    const data = req.query.data;
+app.post("/render", async (req, res) => {
+    const data = req.body
     if (!data) {
         return res.status(400).json({ error: 'Data is required' });
     }
