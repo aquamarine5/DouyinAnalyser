@@ -24,18 +24,19 @@ app.get('/get', async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 });
-app.post("/render", async (req, res) => {
+app.get("/render", async (req, res) => {
     const key = req.query.key;
-    fetch(`http://localhost:1215/counter/query?key=${key}`)
-    if (!data) {
-        return res.status(400).json({ error: 'Data is required' });
-    }
-    try {
-        const html = renderChart(data);
-        res.send(html);
-    } catch (error) {
-        res.status(500).json({ error: error.message });
-    }
+    fetch(`http://localhost:1215/counter/query?key=${key}`).then(res => res.json()).then(data => {
+        if (!data) {
+            return res.status(400).json({ error: 'Data is required' });
+        }
+        try {
+            const html = renderChart(data);
+            res.send(html);
+        } catch (error) {
+            res.status(500).json({ error: error.message });
+        }
+    })
 })
 app.listen(1125, () => {
     console.log('Server is running on port 1125')

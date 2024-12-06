@@ -3,8 +3,8 @@
   "version": "1.0.0",
   "scripts": {
     "server": "node server.js",
-    "remote": "remote-deploy.cmd",
-    "restart": "remote-restart.cmd"
+    "remote": "remote_deploy.cmd",
+    "restart": "remote_restart.cmd"
   },
   "dependencies": {
     "body-parser": "^1.20.3",
