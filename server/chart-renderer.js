@@ -43,7 +43,14 @@ export function renderChart(data) {
     });
     let categories = []
     for (let i = 0; i < datalist.length; i++) {
-        categories.push(datalist[i].date)
+        let date = datalist[i].date
+        let month = Math.floor((date % 10000) / 100)
+        let day = date % 100
+
+        month = month < 10 ? '0' + month : month
+        day = day < 10 ? '0' + day : day
+
+        categories.push(`${month}/${day}`)
     }
     let values = []
     for (let i = 0; i < datalist.length; i++) {
@@ -69,7 +76,13 @@ export function renderChart(data) {
         series: [{
             type: 'line',
             data: values,
-            smooth: true
+            smooth: true,
+            label: {
+                show: true,
+                position: 'bottom',
+                fontSize: 12,
+            },
+            symbolSize: 8,
         }],
         animation: true
     };

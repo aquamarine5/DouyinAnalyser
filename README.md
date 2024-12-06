@@ -6,6 +6,8 @@
 
 想知道自己抖音每天点了多少赞？来试试`DouyinAnalyser`吧👉 [dy.aquamarine5.fun](http://dy.aquamarine5.fun)
 
+![my analysis](http://dy.aquamarine5.fun/server/render?id=1)
+
 ## HTTP APIs
 
 ### for `NodeServer` (port: 1125, [http://dy.aquamarine5.fun/server/](http://dy.aquamarine5.fun/server/) )

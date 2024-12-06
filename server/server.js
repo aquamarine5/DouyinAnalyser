@@ -55,7 +55,7 @@ let browser;
             if (!data) {
                 return res.status(400).json({ error: 'Data is required' });
             }
-
+            res.setHeader('Content-Type', 'image/svg+xml');
             const html = renderChart(data);
             res.send(html);
         } catch (error) {
