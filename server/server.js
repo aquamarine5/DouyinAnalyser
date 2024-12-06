@@ -3,9 +3,8 @@
  * Copyright (c) 2024 by @aquamarine5, RC. All Rights Reversed.
  */
 import express from 'express';
-import { getLikeCount } from './analyser.js';
-import { renderChart } from './chartrenderer.js';
-import fetch from 'node-fetch';
+import { getLikeCount } from './like-analyser.js';
+import { renderChart } from './chart-renderer.js';
 import { launch } from 'puppeteer';
 
 const app = express();
