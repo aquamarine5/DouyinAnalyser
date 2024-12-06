@@ -25,7 +25,8 @@ app.get('/get', async (req, res) => {
     }
 });
 app.post("/render", async (req, res) => {
-    const data = req.body
+    const key = req.query.key;
+    fetch(`http://localhost:1215/counter/query?key=${key}`)
     if (!data) {
         return res.status(400).json({ error: 'Data is required' });
     }

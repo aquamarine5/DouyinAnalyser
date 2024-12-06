@@ -73,7 +73,7 @@ export function renderChart(data) {
     // 获取 SVG 字符串
     const svgStr = div.querySelector('svg').outerHTML;
 
-    // 清理资源
+
     chart.dispose();
     delete global.window;
     delete global.document;

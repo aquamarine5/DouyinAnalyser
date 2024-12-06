@@ -2,7 +2,9 @@
   "name": "puppeteer-server",
   "version": "1.0.0",
   "scripts": {
-    "server": "node server.js"
+    "server": "node server.js",
+    "remote": "remote-deploy.cmd",
+    "restart": "remote-restart.cmd"
   },
   "dependencies": {
     "body-parser": "^1.20.3",

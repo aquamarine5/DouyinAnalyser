@@ -1,3 +1,8 @@
+/*
+ * @Author: aquamarine5 && aquamarine5_@outlook.com
+ * Copyright (c) 2024 by @aquamarine5, RC. All Rights Reversed.
+ */
+
 package org.aquarngd.douyinanalyser.controller;
 
 import com.alibaba.fastjson2.JSONArray;
@@ -25,7 +30,7 @@ public class LikeCounterController {
         this.douyinAnalyserApplication = douyinAnalyserApplication;
     }
 
-    @GetMapping("/get")
+    @GetMapping("/query")
     public JSONObject getLikeList(@RequestParam int id){
         SqlRowSet rowSet=jdbcTemplate.queryForRowSet("SELECT (date,likecount) FROM counts WHERE userid=? ORDER BY date DESC LIMIT 14",id);
         JSONArray likeList=new JSONArray();

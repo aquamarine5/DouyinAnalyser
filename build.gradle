@@ -6,7 +6,7 @@ plugins {
 }
 
 group = 'org.aquarngd'
-version = '0.0.1-SNAPSHOT'
+version = '0.1.0'
 
 java {
     toolchain {
@@ -51,10 +51,19 @@ if (!System.getenv('GITHUB_ACTIONS')) {
         doLast {
             ssh.run {
                 session(remotes.webServer) {
-                    execute 'pm2 stop DouyinAnalyser || true'
                     put from: file("build/libs/DouyinAnalyser-${version}.jar"), into: '/root/workspace/DouyinAnalyser.jar'
-                    execute "export MYSQL_PASSWORD=${project.mysqlPassword} ; pm2 start nohup java -jar /root/workspace/DouyinAnalyser.jar -DMYSQL_PASSWORD=${project.mysqlPassword} --name DouyinAnalyser  > /root/workspace/XiaolianShowerSense.log 2>&1 &"
-
+                    execute 'pm2 restart DouyinAnalyser'
+                }
+            }
+        }
+    }
+    task startJar(type: DefaultTask){
+        dependsOn 'build'
+        doLast {
+            ssh.run{
+                session(remotes.webServer){
+                    put from: file("build/libs/DouyinAnalyser-${version}.jar"), into: '/root/workspace/DouyinAnalyser.jar'
+                    execute "export MYSQL_PASSWORD=${project.mysqlPassword} ; pm2 start --name DouyinAnalyser java -- -jar /root/workspace/DouyinAnalyser.jar -DMYSQL_PASSWORD=${project.mysqlPassword} > /root/workspace/XiaolianShowerSense.log 2>&1 &"
                 }
             }
         }
