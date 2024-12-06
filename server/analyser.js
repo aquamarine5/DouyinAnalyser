@@ -7,7 +7,8 @@ import { launch } from 'puppeteer';
 export async function getLikeCount(key) {
     // 启动浏览器
     const browser = await launch({
-        headless: false, // 设置为 false 表示打开真实浏览器
+        headless: false,
+        args: ['--no-sandbox', '--disable-setuid-sandbox']
     });
     const page = await browser.newPage();
 

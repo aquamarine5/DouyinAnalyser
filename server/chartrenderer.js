@@ -1,6 +1,6 @@
 import * as echarts from 'echarts/core';
 import { SVGRenderer } from 'echarts/renderers';
-import { BarChart } from 'echarts/charts';
+import { BarChart, LineChart } from 'echarts/charts';
 import { TitleComponent, TooltipComponent, LegendComponent, GridComponent } from 'echarts/components';
 import { JSDOM } from 'jsdom';
 
@@ -29,22 +29,23 @@ export function renderChart(data) {
         TitleComponent,
         TooltipComponent,
         LegendComponent,
-        GridComponent
+        GridComponent,
+        LineChart
     ]);
-
+    let datalist = data.data.list
     // 初始化图表实例
     const chart = echarts.init(div, null, {
         renderer: 'svg',
         width: 600,
         height: 400
     });
-    categories = []
-    for (let i = 0; i < data.length; i++) {
-        categories.push(data[i].date)
+    let categories = []
+    for (let i = 0; i < datalist.length; i++) {
+        categories.push(datalist[i].date)
     }
-    values = []
-    for (let i = 0; i < data.length; i++) {
-        values.push(data[i].likecount)
+    let values = []
+    for (let i = 0; i < datalist.length; i++) {
+        values.push(datalist[i].count)
     }
     // 配置图表选项
     const option = {
