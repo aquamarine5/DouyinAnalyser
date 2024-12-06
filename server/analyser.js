@@ -2,14 +2,17 @@
  * @Author: aquamarine5 && aquamarine5_@outlook.com
  * Copyright (c) 2024 by @aquamarine5, RC. All Rights Reversed.
  */
-import { launch } from 'puppeteer';
 
-export async function getLikeCount(key) {
+import { Browser } from "puppeteer";
+
+/**
+ * 
+ * @param {Browser} browser 
+ * @param {string} key 
+ * @returns 
+ */
+export async function getLikeCount(browser, key) {
     // 启动浏览器
-    const browser = await launch({
-        headless: false,
-        args: ['--no-sandbox', '--disable-setuid-sandbox']
-    });
     const page = await browser.newPage();
 
     // 拦截网络请求
@@ -33,10 +36,10 @@ export async function getLikeCount(key) {
                     const responseBody = await response.text();
                     const likeCount = JSON.parse(responseBody).user.favoriting_count;
                     resolve(likeCount);
-                    await browser.close();
+                    await page.close();
                 } catch (error) {
                     reject(error);
-                    await browser.close();
+                    await page.close();
                 }
             }
         });

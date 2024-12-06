@@ -8,9 +8,7 @@ export function renderChart(data) {
     // 创建虚拟 DOM 环境
     const { window } = new JSDOM('<!DOCTYPE html><html><body><div id="chart"></div></body></html>');
     window.HTMLCanvasElement.prototype.getContext = () => {
-
         // return whatever getContext has to return
-
     };
     global.window = window;
     global.document = window.document;
