@@ -1,5 +1,4 @@
 node_modules/**
 node_modules
 
-remote_deploy.cmd
-remote_restart.cmd
+remote_*.cmd

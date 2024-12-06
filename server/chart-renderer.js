@@ -1,3 +1,7 @@
+/*
+ * @Author: aquamarine5 && aquamarine5_@outlook.com
+ * Copyright (c) 2024 by @aquamarine5, RC. All Rights Reversed.
+ */
 import * as echarts from 'echarts/core';
 import { SVGRenderer } from 'echarts/renderers';
 import { BarChart, LineChart } from 'echarts/charts';
@@ -20,7 +24,6 @@ export function renderChart(data) {
         clientHeight: { value: 400 }
     });
 
-    // 注册必要的组件
     echarts.use([
         SVGRenderer,
         BarChart,
@@ -30,8 +33,9 @@ export function renderChart(data) {
         GridComponent,
         LineChart
     ]);
+    console.log(data)
     let datalist = data.data.list
-    // 初始化图表实例
+
     const chart = echarts.init(div, null, {
         renderer: 'svg',
         width: 600,
@@ -45,7 +49,8 @@ export function renderChart(data) {
     for (let i = 0; i < datalist.length; i++) {
         values.push(datalist[i].count)
     }
-    // 配置图表选项
+    const yValues = datalist.map(item => item.count);
+    const minValue = Math.min(...yValues);
     const option = {
         title: {
             text: '数据统计'
@@ -57,19 +62,20 @@ export function renderChart(data) {
             data: categories
         },
         yAxis: {
-            type: 'value'
+            type: 'value',
+            min: Math.floor(minValue * 0.98),
+            minInterval: 10
         },
         series: [{
             type: 'line',
-            data: values
+            data: values,
+            smooth: true
         }],
         animation: true
     };
 
-    // 设置选项并渲染
     chart.setOption(option);
 
-    // 获取 SVG 字符串
     const svgStr = div.querySelector('svg').outerHTML;
 
 

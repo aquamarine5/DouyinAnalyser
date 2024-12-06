@@ -36,12 +36,16 @@ let browser;
                 likeCount: likeCount
             });
         } catch (error) {
-            res.status(500).json({ error: error.message });
+            console.log(error)
+            res.status(500).json({ error: error.message, stack: error.stack });
         }
     });
 
     app.get("/render", async (req, res) => {
         const key = req.query.id;
+        if (!key) {
+            return res.status(400).json({ error: 'Id is required' });
+        }
         try {
             const response = await fetch(`http://localhost:1215/counter/query?id=${key}`, {
                 method: "GET"
@@ -55,7 +59,8 @@ let browser;
             const html = renderChart(data);
             res.send(html);
         } catch (error) {
-            res.status(500).json({ error: error.message });
+            console.log(error)
+            res.status(500).json({ error: error.message, stack: error.stack });
         }
     });
 
