@@ -32,7 +32,7 @@ public class LikeCounterController {
 
     @GetMapping("/query")
     public JSONObject getLikeList(@RequestParam int id){
-        SqlRowSet rowSet=jdbcTemplate.queryForRowSet("SELECT (date,likecount) FROM counts WHERE userid=? ORDER BY date DESC LIMIT 14",id);
+        SqlRowSet rowSet=jdbcTemplate.queryForRowSet("SELECT date,likecount FROM counts WHERE userid=? ORDER BY date DESC LIMIT 14",id);
         JSONArray likeList=new JSONArray();
         while(rowSet.next()){
             JSONObject like=new JSONObject();
