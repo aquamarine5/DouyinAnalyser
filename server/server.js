@@ -5,23 +5,40 @@
 import express from 'express';
 import { getLikeCount } from './like-analyser.js';
 import { renderChart } from './chart-renderer.js';
-import { launch } from 'puppeteer';
+import { Browser, launch } from 'puppeteer';
 
 const app = express();
 app.use(express.json());
 
+
 let browser;
+/**
+ * @returns {Promise<Browser>}
+ */
+async function getBrowser() {
+    setupBrowser();
+    return browser;
+}
+
+async function setupBrowser() {
+    if (!browser || browser.connected === false) {
+        browser = await launch({
+            executablePath: '/usr/bin/chromium-browser',
+            args: [
+                '--no-sandbox',
+                '--disable-setuid-sandbox',
+                '--disable-gpu',
+                '--disable-dev-shm-usage'
+            ]
+        });
+        browser.on('disconnected', async () => {
+            await setupBrowser();
+        })
+    }
+}
 
 (async () => {
-    browser = await launch({
-        executablePath: '/usr/bin/chromium-browser',
-        args: [
-            '--no-sandbox',
-            '--disable-setuid-sandbox',
-            '--disable-gpu',
-            '--disable-dev-shm-usage'
-        ]
-    });
+    setupBrowser();
 
     app.get('/get', async (req, res) => {
         const key = req.query.key;
@@ -30,7 +47,7 @@ let browser;
         }
 
         try {
-            const likeCount = await getLikeCount(browser, key);
+            const likeCount = await getLikeCount(await getBrowser(), key);
             res.json({
                 status: 'success',
                 likeCount: likeCount

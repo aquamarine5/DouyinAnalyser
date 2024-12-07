@@ -21,7 +21,7 @@ public class UserController {
 
     @CrossOrigin(origins = "*")
     @PostMapping("/add")
-    public JSONObject AddUser(@RequestParam String username, @RequestParam String key){
+    public JSONObject AddUser(@RequestParam String username, @RequestParam String key) {
         jdbcTemplate.update("INSERT INTO userinfo (`name`, `key`) VALUES (?, ?) ON DUPLICATE KEY UPDATE `name` = VALUES(name)", username, key);
         return UnifiedResponse.SuccessSignal();
     }
