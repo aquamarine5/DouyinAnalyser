@@ -20,8 +20,8 @@ export function renderChart(data) {
     // 准备容器
     const div = document.getElementById('chart');
     Object.defineProperties(div, {
-        clientWidth: { value: 600 },
-        clientHeight: { value: 400 }
+        clientWidth: { value: 450 },
+        clientHeight: { value: 300 }
     });
 
     echarts.use([
@@ -38,8 +38,8 @@ export function renderChart(data) {
 
     const chart = echarts.init(div, null, {
         renderer: 'svg',
-        width: 600,
-        height: 400
+        width: 450,
+        height: 300
     });
     let categories = []
     for (let i = 0; i < datalist.length; i++) {
@@ -58,9 +58,34 @@ export function renderChart(data) {
     }
     const yValues = datalist.map(item => item.count);
     const minValue = Math.min(...yValues);
+    const maxValue = Math.max(...yValues);
+    let deltavalues = []
+    for (let i = 1; i < values.length; i++) {
+        deltavalues.push(values[i] - values[i - 1])
+    }
+    const deltaMinValues = Math.min(...deltavalues);
+    const deltaMaxValues = Math.max(...deltavalues);
+    deltavalues.push('-')
     const option = {
+        backgroundColor: '#ffffff',
         title: {
-            text: '数据统计'
+            top: 10,
+            left: 10,
+            padding: [4, 4],
+            textStyle: {
+                color: '#2f80ed',
+                fontSize: 18,
+            },
+            text: `@${data.data.name} 的抖音点赞数统计`
+        },
+        grid: {
+            top: 70,
+            left: 60,
+            right: 60,
+            bottom: 20,
+            show: true,
+            backgroundColor: "#ffffff",
+            borderRadius: 8
         },
         tooltip: {
             trigger: 'axis'
@@ -68,21 +93,50 @@ export function renderChart(data) {
         xAxis: {
             data: categories
         },
-        yAxis: {
+        yAxis: [{
+            name: "总共",
             type: 'value',
+            position: 'left',
             min: Math.floor(minValue * 0.98),
+            max: Math.floor(maxValue * 1.02),
             minInterval: 10
-        },
+        }, {
+            name: "当日",
+            type: 'value',
+            position: 'right',
+            max: Math.floor(deltaMaxValues * 1.1),
+            min: Math.floor(deltaMinValues * 0.9),
+            splitLine: {
+                show: false
+            }
+        }],
         series: [{
             type: 'line',
             data: values,
             smooth: true,
             label: {
                 show: true,
-                position: 'bottom',
+                position: 'top',
                 fontSize: 12,
+                color: '#2f4554',
+                formatter: "{c}"
             },
-            symbolSize: 8,
+            yAxisIndex: 0,
+            symbol: 'circle',
+            symbolSize: 6,
+        }, {
+            type: 'bar',
+            yAxisIndex: 1,
+            data: deltavalues,
+            itemStyle: {
+                borderRadius: 5
+            },
+            label: {
+                show: true,
+                position: 'top',
+                fontSize: 12,
+                color: '#2f4554'
+            }
         }],
         animation: true
     };

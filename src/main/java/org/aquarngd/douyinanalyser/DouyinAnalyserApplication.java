@@ -36,19 +36,19 @@ public class DouyinAnalyserApplication {
 
     @Scheduled(cron = "0 0 0 * * *")
     public void updateLikeCount() throws IOException, InterruptedException {
-        HttpClient httpClient=HttpClient.newHttpClient();
+        HttpClient httpClient = HttpClient.newHttpClient();
         SqlRowSet userlist = jdbcTemplate.queryForRowSet("SELECT `key`, `id` FROM userinfo");
         while (userlist.next()) {
             String key = userlist.getString("key");
-            HttpRequest request=HttpRequest.newBuilder()
-                    .uri(URI.create("http://localhost:1125/get?key="+key))
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(URI.create("http://localhost:1125/get?key=" + key))
                     .GET()
                     .build();
-            HttpResponse<String> response= httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-            JSONObject jsonResponse=JSONObject.parseObject(response.body());
-            String numberDate= LocalDate.now().format(DateTimeFormatter.ofPattern("yyMMdd"));
+            HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+            JSONObject jsonResponse = JSONObject.parseObject(response.body());
+            String numberDate = LocalDate.now().format(DateTimeFormatter.ofPattern("yyMMdd"));
             jdbcTemplate.update("INSERT INTO `counts` (date, userid, likecount) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE likecount = VALUES(likecount)",
-                    numberDate,userlist.getInt("id"),jsonResponse.getIntValue("likeCount"));
+                    numberDate, userlist.getInt("id"), jsonResponse.getIntValue("likeCount"));
         }
         httpClient.close();
     }

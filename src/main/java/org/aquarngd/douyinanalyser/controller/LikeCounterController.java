@@ -31,17 +31,21 @@ public class LikeCounterController {
     }
 
     @GetMapping("/query")
-    public JSONObject getLikeList(@RequestParam int id){
-        SqlRowSet rowSet=jdbcTemplate.queryForRowSet("SELECT date,likecount FROM counts WHERE userid=? ORDER BY date ASC LIMIT 14",id);
-        JSONArray likeList=new JSONArray();
-        while(rowSet.next()){
-            JSONObject like=new JSONObject();
-            like.put("date",rowSet.getInt("date"));
-            like.put("count",rowSet.getInt("likecount"));
+    public JSONObject getLikeList(@RequestParam int id) {
+        SqlRowSet rowSet = jdbcTemplate.queryForRowSet("SELECT date,likecount FROM counts WHERE userid=? ORDER BY date ASC LIMIT 14", id);
+        JSONArray likeList = new JSONArray();
+        while (rowSet.next()) {
+            JSONObject like = new JSONObject();
+            like.put("date", rowSet.getInt("date"));
+            like.put("count", rowSet.getInt("likecount"));
             likeList.add(like);
         }
-        JSONObject result=new JSONObject();
-        result.put("list",likeList);
+        SqlRowSet userInfo = jdbcTemplate.queryForRowSet("SELECT `name` FROM userinfo WHERE `id`=?", id);
+        JSONObject result = new JSONObject();
+        if (userInfo.next()) {
+            result.put("name", userInfo.getString("name"));
+        }
+        result.put("list", likeList);
         return UnifiedResponse.Success(result);
     }
 
