@@ -16,7 +16,7 @@ export async function getLikeCount(browser, key) {
 
     await page.setRequestInterception(true);
     page.on('request', interceptedRequest => {
-        if (interceptedRequest.resourceType() === 'image') {
+        if (['image', 'stylesheet', 'font'].includes(interceptedRequest.resourceType())) {
             interceptedRequest.abort();
         } else {
             interceptedRequest.continue();
@@ -26,7 +26,8 @@ export async function getLikeCount(browser, key) {
     return new Promise((resolve, reject) => {
         page.on('response', async response => {
             const responseUrl = response.url();
-            if (responseUrl.includes('www.douyin.com/aweme/v1/web/user/profile/other')) {
+            const responseType = response.request().method();
+            if (responseUrl.includes('aweme/v1/web/user/profile/other') && responseType === 'GET') {
                 try {
                     const responseBody = await response.text();
                     const likeCount = JSON.parse(responseBody).user.favoriting_count;
