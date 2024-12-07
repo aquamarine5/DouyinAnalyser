@@ -12,6 +12,12 @@ import { Browser } from "puppeteer";
  * @returns 
  */
 export async function getLikeCount(browser, key) {
+    // Validate the key parameter
+    const validKeyPattern = /^[a-zA-Z0-9_-]+$/;
+    if (!validKeyPattern.test(key)) {
+        throw new Error('Invalid key parameter');
+    }
+
     const page = await browser.newPage();
 
     await page.setRequestInterception(true);
