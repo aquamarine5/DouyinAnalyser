@@ -52,7 +52,7 @@ function parseKey() {
     }
     axios.get(`http://dy.aquamarine5.fun/api/user/parse?url=${url}`).then(response => {
         console.log(response);
-        userkey.value = response.data.key;
+        userkey.value = response.data.data.key;
     });
 }
 </script>
