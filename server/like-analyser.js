@@ -32,6 +32,7 @@ export async function getLikeCount(browser, key) {
     return new Promise((resolve, reject) => {
         page.on('response', async response => {
             const responseUrl = response.url();
+            console.log(responseUrl)
             const responseType = response.request().method();
             if (responseUrl.includes('aweme/v1/web/user/profile/other') && responseType === 'GET') {
                 try {
@@ -46,6 +47,6 @@ export async function getLikeCount(browser, key) {
             }
         });
 
-        page.goto(`https://www.douyin.com/user/${key}`).catch(reject);
+        page.goto(`https://www.douyin.com/user/${key}`, { timeout: 3000000 }).catch(reject);
     });
 }

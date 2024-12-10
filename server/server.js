@@ -23,7 +23,6 @@ async function getBrowser() {
 async function setupBrowser() {
     if (!browser || browser.connected === false) {
         browser = await launch({
-            executablePath: '/usr/bin/chromium-browser',
             args: [
                 '--no-sandbox',
                 '--disable-setuid-sandbox',
@@ -72,6 +71,9 @@ async function setupBrowser() {
             if (!data) {
                 return res.status(400).json({ error: 'Data is required' });
             }
+            res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+            res.setHeader('Pragma', 'no-cache');
+            res.setHeader('Expires', '0');
             res.setHeader('Content-Type', 'image/svg+xml');
             const html = renderChart(data);
             res.send(html);
