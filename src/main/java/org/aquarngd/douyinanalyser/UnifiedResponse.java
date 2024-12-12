@@ -5,10 +5,17 @@
 
 package org.aquarngd.douyinanalyser;
 
+import com.alibaba.fastjson2.JSONArray;
 import com.alibaba.fastjson2.JSONObject;
 
 public class UnifiedResponse {
     public static JSONObject Success(JSONObject data) {
+        return new JSONObject()
+                .fluentPut("status", "success")
+                .fluentPut("data", data);
+    }
+
+    public static JSONObject Success(JSONArray data) {
         return new JSONObject()
                 .fluentPut("status", "success")
                 .fluentPut("data", data);

@@ -107,7 +107,7 @@ export function renderChart(data) {
             type: 'value',
             position: 'right',
             max: Math.floor(deltaMaxValues * 1.1),
-            min: Math.floor(deltaMinValues * 0.8),
+            min: Math.floor(deltaMinValues * 0.6),
             splitLine: {
                 show: false
             }
@@ -131,7 +131,7 @@ export function renderChart(data) {
             yAxisIndex: 1,
             data: deltavalues,
             itemStyle: {
-                borderRadius: 8,
+                borderRadius: [8, 8, 2, 2],
                 color: (params) => {
                     return params.dataIndex === deltavalues.length - 1 ?
                         '#FBA414'
