@@ -17,6 +17,12 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.io.IOException;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 @RestController
 @RequestMapping("/counter")
@@ -32,7 +38,7 @@ public class LikeCounterController {
 
     @GetMapping("/query")
     public JSONObject getLikeList(@RequestParam int id) {
-        SqlRowSet rowSet = jdbcTemplate.queryForRowSet("SELECT date,likecount FROM counts WHERE userid=? ORDER BY date ASC LIMIT 14", id);
+        SqlRowSet rowSet = jdbcTemplate.queryForRowSet("SELECT date,likecount FROM counts WHERE userid=? ORDER BY date LIMIT 14", id);
         JSONArray likeList = new JSONArray();
         while (rowSet.next()) {
             JSONObject like = new JSONObject();
@@ -51,7 +57,35 @@ public class LikeCounterController {
 
     @GetMapping("/update")
     public JSONObject forceUpdate() throws IOException, InterruptedException {
-        douyinAnalyserApplication.updateLikeCount();
-        return UnifiedResponse.SuccessSignal();
+        HttpClient httpClient = HttpClient.newHttpClient();
+        SqlRowSet userlist = jdbcTemplate.queryForRowSet("SELECT `key`, `id` FROM userinfo");
+        JSONArray result = new JSONArray();
+        while (userlist.next()) {
+            String key = userlist.getString("key");
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(URI.create("http://localhost:1125/get?key=" + key))
+                    .GET()
+                    .build();
+            HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+            JSONObject jsonResponse = JSONObject.parseObject(response.body());
+            String numberDate = LocalDate.now().format(DateTimeFormatter.ofPattern("yyMMdd"));
+
+            if (jsonResponse.getIntValue("likeCount", 0) == 0) {
+                result.add(new JSONObject().fluentPut("id", userlist.getInt("id")).fluentPut("status", "failed with 0 like count"));
+            } else if (jsonResponse.getIntValue("likeCount") == -1) {
+                result.add(new JSONObject().fluentPut("id", userlist.getInt("id")).fluentPut("status", "like list is private"));
+            } else {
+                jdbcTemplate.update("INSERT INTO `counts` (date, userid, likecount) VALUES (?, ?, ?) AS newvalue ON DUPLICATE KEY UPDATE likecount = newvalue.likecount",
+                        numberDate, userlist.getInt("id"), jsonResponse.getIntValue("likeCount"));
+                result.add(new JSONObject().fluentPut("id", userlist.getInt("id")).fluentPut("status", "success"));
+            }
+        }
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create("http://localhost:1125/stop_puppeteer"))
+                .GET()
+                .build();
+        httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+        httpClient.close();
+        return UnifiedResponse.Success(result);
     }
 }

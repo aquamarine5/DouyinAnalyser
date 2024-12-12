@@ -11,7 +11,7 @@ const app = express();
 app.use(express.json());
 
 
-let browser;
+let browser = null;
 /**
  * @returns {Promise<Browser>}
  */
@@ -23,23 +23,25 @@ async function getBrowser() {
 async function setupBrowser() {
     if (!browser || browser.connected === false) {
         browser = await launch({
-            executablePath: '/usr/bin/chromium-browser',
+            headless: true,
             args: [
                 '--no-sandbox',
                 '--disable-setuid-sandbox',
                 '--disable-gpu',
-                '--disable-dev-shm-usage'
-            ]
-        });
-        browser.on('disconnected', async () => {
-            await setupBrowser();
+                '--disable-dev-shm-usage',
+                '--no-first-run',
+                '--no-zygote',
+                '--single-process',
+            ],
+            userDataDir: "/dev/null"
         })
     }
 }
 
 (async () => {
-    setupBrowser();
 
+
+    setupBrowser();
     app.get('/get', async (req, res) => {
         const key = req.query.key;
         if (!key) {
@@ -47,17 +49,43 @@ async function setupBrowser() {
         }
 
         try {
-            const likeCount = await getLikeCount(await getBrowser(), key);
-            res.json({
-                status: 'success',
-                likeCount: likeCount
+            let bb = browser = await launch({
+                headless: true,
+                args: [
+                    '--no-sandbox',
+                    '--disable-setuid-sandbox',
+                    '--disable-gpu',
+                    '--disable-dev-shm-usage',
+                    '--no-first-run',
+                    '--no-zygote',
+                    '--single-process',
+                ]
             });
+            getLikeCount(bb, key).then((likeCount) => {
+                res.json({
+                    status: 'success',
+                    likeCount: likeCount
+                });
+            }).catch((error) => {
+                console.log(error)
+                res.status(500).json({
+                    error: error.message, stack: error.stack
+                })
+            }).finally(async () => {
+                await bb.close();
+            })
         } catch (error) {
             console.log(error)
             res.status(500).json({ error: error.message, stack: error.stack });
         }
     });
-
+    app.get("/stop_puppeteer", async (req, res) => {
+        if (browser) {
+            await browser.close();
+            browser = null;
+        }
+        res.json({ status: 'success' });
+    })
     app.get("/render", async (req, res) => {
         const key = req.query.id;
         if (!key) {
@@ -72,6 +100,9 @@ async function setupBrowser() {
             if (!data) {
                 return res.status(400).json({ error: 'Data is required' });
             }
+            res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+            res.setHeader('Pragma', 'no-cache');
+            res.setHeader('Expires', '0');
             res.setHeader('Content-Type', 'image/svg+xml');
             const html = renderChart(data);
             res.send(html);

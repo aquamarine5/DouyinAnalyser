@@ -65,7 +65,8 @@ export function renderChart(data) {
     }
     const deltaMinValues = Math.min(...deltavalues);
     const deltaMaxValues = Math.max(...deltavalues);
-    deltavalues.push('-')
+    const avgDeltaValues = deltavalues.reduce((a, b) => a + b) / deltavalues.length;
+    deltavalues.push(avgDeltaValues);
     const option = {
         backgroundColor: '#ffffff',
         title: {
@@ -85,7 +86,8 @@ export function renderChart(data) {
             bottom: 20,
             show: true,
             backgroundColor: "#ffffff",
-            borderRadius: 8
+            borderRadius: 8,
+            borderColor: "transparent"
         },
         tooltip: {
             trigger: 'axis'
@@ -105,7 +107,7 @@ export function renderChart(data) {
             type: 'value',
             position: 'right',
             max: Math.floor(deltaMaxValues * 1.1),
-            min: Math.floor(deltaMinValues * 0.9),
+            min: Math.floor(deltaMinValues * 0.6),
             splitLine: {
                 show: false
             }
@@ -129,13 +131,23 @@ export function renderChart(data) {
             yAxisIndex: 1,
             data: deltavalues,
             itemStyle: {
-                borderRadius: 5
+                borderRadius: [8, 8, 2, 2],
+                color: (params) => {
+                    return params.dataIndex === deltavalues.length - 1 ?
+                        '#FBA414'
+                        : '#67C23A'
+                }
             },
             label: {
                 show: true,
                 position: 'top',
                 fontSize: 12,
-                color: '#2f4554'
+                color: '#2f4554',
+                formatter: (params) => {
+                    return params.dataIndex === deltavalues.length - 1 ?
+                        `平均\n${params.value.toFixed(1)}` :
+                        params.value;
+                }
             }
         }],
         animation: true

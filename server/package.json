@@ -4,7 +4,8 @@
   "scripts": {
     "server": "node server.js",
     "remote": "remote_deploy.cmd",
-    "restart": "remote_restart.cmd"
+    "restart": "remote_restart.cmd",
+    "nogit": "remote_restart_nogit.cmd"
   },
   "dependencies": {
     "body-parser": "^1.20.3",

@@ -47,9 +47,18 @@ public class DouyinAnalyserApplication {
             HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
             JSONObject jsonResponse = JSONObject.parseObject(response.body());
             String numberDate = LocalDate.now().format(DateTimeFormatter.ofPattern("yyMMdd"));
-            jdbcTemplate.update("INSERT INTO `counts` (date, userid, likecount) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE likecount = VALUES(likecount)",
+
+            if(jsonResponse.getIntValue("likeCount",0)== 0) {
+                continue;
+            }
+            jdbcTemplate.update("INSERT INTO `counts` (date, userid, likecount) VALUES (?, ?, ?) AS newvalue ON DUPLICATE KEY UPDATE likecount = newvalue.likecount",
                     numberDate, userlist.getInt("id"), jsonResponse.getIntValue("likeCount"));
         }
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create("http://localhost:1125/stop_puppeteer"))
+                .GET()
+                .build();
+        httpClient.send(request, HttpResponse.BodyHandlers.ofString());
         httpClient.close();
     }
 }
