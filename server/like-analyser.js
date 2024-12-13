@@ -6,7 +6,7 @@
 import { Browser } from "puppeteer";
 
 /**
- * 
+ * @deprecated
  * @param {Browser} browser 
  * @param {string} key 
  * @returns 
