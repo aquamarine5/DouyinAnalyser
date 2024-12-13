@@ -13,6 +13,7 @@ app.use(express.json());
 
 let browser = null;
 /**
+ * @deprecated
  * @returns {Promise<Browser>}
  */
 async function getBrowser() {
@@ -39,51 +40,6 @@ async function setupBrowser() {
 }
 
 (async () => {
-
-    app.get('/get', async (req, res) => {
-        const key = req.query.key;
-        if (!key) {
-            return res.status(400).json({ error: 'Key is required' });
-        }
-        return res.json({ key: key });
-        try {
-            let bb = browser = await launch({
-                headless: true,
-                args: [
-                    '--no-sandbox',
-                    '--disable-setuid-sandbox',
-                    '--disable-gpu',
-                    '--disable-dev-shm-usage',
-                    '--no-first-run',
-                    '--no-zygote',
-                    '--single-process',
-                ]
-            });
-            getLikeCount(bb, key).then((likeCount) => {
-                res.json({
-                    status: 'success',
-                    likeCount: likeCount
-                });
-            }).catch((error) => {
-                console.log(error)
-                res.status(500).json({
-                    error: error.message, stack: error.stack
-                })
-            }).finally(async () => {
-                await bb.close();
-            })
-        } catch (error) {
-            console.log(error)
-            res.status(500).json({ error: error.message, stack: error.stack });
-        }
-    });
-    app.get("/stop_puppeteer", async (req, res) => {
-        if (browser) {
-            await browser.close();
-            browser = null;
-        }
-        res.json({ status: 'success' });
-    })
     app.get("/render", async (req, res) => {
         const key = req.query.id;
         if (!key) {
