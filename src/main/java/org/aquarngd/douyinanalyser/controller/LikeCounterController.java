@@ -38,7 +38,7 @@ public class LikeCounterController {
 
     @GetMapping("/query")
     public JSONObject getLikeList(@RequestParam int id) {
-        SqlRowSet rowSet = jdbcTemplate.queryForRowSet("SELECT date,likecount FROM counts WHERE userid=? ORDER BY date LIMIT 14", id);
+        SqlRowSet rowSet = jdbcTemplate.queryForRowSet("SELECT date,likecount FROM counts WHERE userid=? ORDER BY date LIMIT 30", id);
         JSONArray likeList = new JSONArray();
         while (rowSet.next()) {
             JSONObject like = new JSONObject();
@@ -63,28 +63,23 @@ public class LikeCounterController {
         while (userlist.next()) {
             String key = userlist.getString("key");
             HttpRequest request = HttpRequest.newBuilder()
-                    .uri(URI.create("http://localhost:1125/get?key=" + key))
+                    .uri(URI.create("http://localhost:1132/api/douyin/web/handler_user_profile?sec_user_id=" + key))
                     .GET()
                     .build();
             HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
             JSONObject jsonResponse = JSONObject.parseObject(response.body());
             String numberDate = LocalDate.now().format(DateTimeFormatter.ofPattern("yyMMdd"));
-
-            if (jsonResponse.getIntValue("likeCount", 0) == 0) {
+            int likecount=jsonResponse.getJSONObject("data").getJSONObject("user").getIntValue("favoriting_count");
+            if (likecount == 0) {
                 result.add(new JSONObject().fluentPut("id", userlist.getInt("id")).fluentPut("status", "failed with 0 like count"));
-            } else if (jsonResponse.getIntValue("likeCount") == -1) {
+            } else if (likecount == -1) {
                 result.add(new JSONObject().fluentPut("id", userlist.getInt("id")).fluentPut("status", "like list is private"));
             } else {
                 jdbcTemplate.update("INSERT INTO `counts` (date, userid, likecount) VALUES (?, ?, ?) AS newvalue ON DUPLICATE KEY UPDATE likecount = newvalue.likecount",
-                        numberDate, userlist.getInt("id"), jsonResponse.getIntValue("likeCount"));
+                        numberDate, userlist.getInt("id"), likecount);
                 result.add(new JSONObject().fluentPut("id", userlist.getInt("id")).fluentPut("status", "success"));
             }
         }
-        HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create("http://localhost:1125/stop_puppeteer"))
-                .GET()
-                .build();
-        httpClient.send(request, HttpResponse.BodyHandlers.ofString());
         httpClient.close();
         return UnifiedResponse.Success(result);
     }

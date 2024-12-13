@@ -40,14 +40,12 @@ async function setupBrowser() {
 
 (async () => {
 
-
-    setupBrowser();
     app.get('/get', async (req, res) => {
         const key = req.query.key;
         if (!key) {
             return res.status(400).json({ error: 'Key is required' });
         }
-
+        return res.json({ key: key });
         try {
             let bb = browser = await launch({
                 headless: true,

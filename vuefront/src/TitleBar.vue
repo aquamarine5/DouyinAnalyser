@@ -29,7 +29,7 @@ function jumpToDouyin() {
             <div class="app_title" @click="gotoHome">
                 <slot></slot>
                 <div class="topbar_version">
-                    v0.3
+                    v0.4
                 </div>
             </div>
 
