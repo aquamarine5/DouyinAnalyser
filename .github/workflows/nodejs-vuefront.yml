@@ -35,5 +35,6 @@ jobs:
         cache: 'pnpm'
     - name: Install dependencies
       run: pnpm install
+      working-directory: ./vuefront
     - run: npm run build --if-present
       working-directory: ./vuefront
