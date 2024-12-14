@@ -19,7 +19,7 @@ java -jar build/libs/DouyinAnalyser-${version}.jar
 
 这将运行用于链接 MySQL 的 Springboot 服务。  
 
-> [!WARN]
+> [!NOTE]
 > 默认将读取环境变量中的 `MYSQL_PASSWORD` 作为MySQL密码。
 
 ```bash
