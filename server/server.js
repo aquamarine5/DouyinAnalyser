@@ -3,41 +3,10 @@
  * Copyright (c) 2024 by @aquamarine5, RC. All Rights Reversed.
  */
 import express from 'express';
-import { getLikeCount } from './like-analyser.js';
 import { renderChart } from './chart-renderer.js';
-import { Browser, launch } from 'puppeteer';
 
 const app = express();
 app.use(express.json());
-
-
-let browser = null;
-/**
- * @deprecated
- * @returns {Promise<Browser>}
- */
-async function getBrowser() {
-    setupBrowser();
-    return browser;
-}
-
-async function setupBrowser() {
-    if (!browser || browser.connected === false) {
-        browser = await launch({
-            headless: true,
-            args: [
-                '--no-sandbox',
-                '--disable-setuid-sandbox',
-                '--disable-gpu',
-                '--disable-dev-shm-usage',
-                '--no-first-run',
-                '--no-zygote',
-                '--single-process',
-            ],
-            userDataDir: "/dev/null"
-        })
-    }
-}
 
 (async () => {
     app.get("/render", async (req, res) => {
@@ -54,9 +23,7 @@ async function setupBrowser() {
             if (!data) {
                 return res.status(400).json({ error: 'Data is required' });
             }
-            res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
-            res.setHeader('Pragma', 'no-cache');
-            res.setHeader('Expires', '0');
+            res.setHeader('Cache-Control', 'max-age=3600, s-maxage=3600');
             res.setHeader('Content-Type', 'image/svg+xml');
             const html = renderChart(data);
             res.send(html);

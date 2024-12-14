@@ -1,5 +1,5 @@
 {
-  "name": "puppeteer-server",
+  "name": "echarts-server",
   "version": "1.0.0",
   "scripts": {
     "server": "node server.js",
@@ -8,11 +8,8 @@
     "nogit": "remote_restart_nogit.cmd"
   },
   "dependencies": {
-    "body-parser": "^1.20.3",
     "echarts": "^5.5.1",
-    "express": "^4.21.2",
-    "jsdom": "^25.0.1",
-    "puppeteer": "^23.10.4"
+    "express": "^4.21.2"
   },
   "type": "module"
 }

@@ -6,24 +6,8 @@ import * as echarts from 'echarts/core';
 import { SVGRenderer } from 'echarts/renderers';
 import { BarChart, LineChart } from 'echarts/charts';
 import { TitleComponent, TooltipComponent, LegendComponent, GridComponent } from 'echarts/components';
-import { JSDOM } from 'jsdom';
 
 export function renderChart(data) {
-    // 创建虚拟 DOM 环境
-    const { window } = new JSDOM('<!DOCTYPE html><html><body><div id="chart"></div></body></html>');
-    window.HTMLCanvasElement.prototype.getContext = () => {
-        // return whatever getContext has to return
-    };
-    global.window = window;
-    global.document = window.document;
-
-    // 准备容器
-    const div = document.getElementById('chart');
-    Object.defineProperties(div, {
-        clientWidth: { value: 450 },
-        clientHeight: { value: 300 }
-    });
-
     echarts.use([
         SVGRenderer,
         BarChart,
@@ -36,8 +20,9 @@ export function renderChart(data) {
     console.log(data)
     let datalist = data.data.list
 
-    const chart = echarts.init(div, null, {
+    const chart = echarts.init(null, null, {
         renderer: 'svg',
+        ssr: true,
         width: 450,
         height: 300
     });
@@ -93,6 +78,7 @@ export function renderChart(data) {
             trigger: 'axis'
         },
         xAxis: {
+            type: 'category',
             data: categories
         },
         yAxis: [{
@@ -119,13 +105,17 @@ export function renderChart(data) {
             label: {
                 show: true,
                 position: 'top',
-                fontSize: 12,
-                color: '#2f4554',
-                formatter: "{c}"
+                formatter: (params) => {
+                    console.log(params)
+                    return params.dataIndex === values.length - 1 ?
+                        params.value :
+                        '';
+                }
+
             },
-            yAxisIndex: 0,
-            symbol: 'circle',
-            symbolSize: 6,
+            //yAxisIndex: 0,
+            //symbol: 'circle',
+            //symbolSize: 6,
         }, {
             type: 'bar',
             yAxisIndex: 1,
@@ -155,12 +145,9 @@ export function renderChart(data) {
 
     chart.setOption(option);
 
-    const svgStr = div.querySelector('svg').outerHTML;
-
+    const svgStr = chart.renderToSVGString();
 
     chart.dispose();
-    delete global.window;
-    delete global.document;
 
     return svgStr;
 }
