@@ -29,11 +29,9 @@ import java.time.format.DateTimeFormatter;
 public class LikeCounterController {
 
     private final JdbcTemplate jdbcTemplate;
-    private final DouyinAnalyserApplication douyinAnalyserApplication;
 
-    public LikeCounterController(JdbcTemplate jdbcTemplate, DouyinAnalyserApplication douyinAnalyserApplication) {
+    public LikeCounterController(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
-        this.douyinAnalyserApplication = douyinAnalyserApplication;
     }
 
     @GetMapping("/query")
@@ -62,21 +60,17 @@ public class LikeCounterController {
         JSONArray result = new JSONArray();
         while (userlist.next()) {
             String key = userlist.getString("key");
-            HttpRequest request = HttpRequest.newBuilder()
-                    .uri(URI.create("http://localhost:1132/api/douyin/web/handler_user_profile?sec_user_id=" + key))
-                    .GET()
-                    .build();
+            HttpRequest request = HttpRequest.newBuilder().uri(URI.create("http://localhost:1132/api/douyin/web/handler_user_profile?sec_user_id=" + key)).GET().build();
             HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
             JSONObject jsonResponse = JSONObject.parseObject(response.body());
             String numberDate = LocalDate.now().format(DateTimeFormatter.ofPattern("yyMMdd"));
-            int likecount=jsonResponse.getJSONObject("data").getJSONObject("user").getIntValue("favoriting_count");
+            int likecount = jsonResponse.getJSONObject("data").getJSONObject("user").getIntValue("favoriting_count");
             if (likecount == 0) {
                 result.add(new JSONObject().fluentPut("id", userlist.getInt("id")).fluentPut("status", "failed with 0 like count"));
             } else if (likecount == -1) {
                 result.add(new JSONObject().fluentPut("id", userlist.getInt("id")).fluentPut("status", "like list is private"));
             } else {
-                jdbcTemplate.update("INSERT INTO `counts` (date, userid, likecount) VALUES (?, ?, ?) AS newvalue ON DUPLICATE KEY UPDATE likecount = newvalue.likecount",
-                        numberDate, userlist.getInt("id"), likecount);
+                jdbcTemplate.update("INSERT INTO `counts` (date, userid, likecount) VALUES (?, ?, ?) AS newvalue ON DUPLICATE KEY UPDATE likecount = newvalue.likecount", numberDate, userlist.getInt("id"), likecount);
                 result.add(new JSONObject().fluentPut("id", userlist.getInt("id")).fluentPut("status", "success"));
             }
         }

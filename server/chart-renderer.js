@@ -52,7 +52,7 @@ export function renderChart(data) {
     const deltaMaxValues = Math.max(...deltavalues);
     const avgDeltaValues = deltavalues.reduce((a, b) => a + b) / deltavalues.length;
     deltavalues.push(avgDeltaValues);
-    const option = {
+    chart.setOption({
         backgroundColor: '#ffffff',
         title: {
             top: 10,
@@ -140,10 +140,8 @@ export function renderChart(data) {
                 }
             }
         }],
-        animation: true
-    };
-
-    chart.setOption(option);
+        animation: true,
+    });
 
     const svgStr = chart.renderToSVGString();
 
