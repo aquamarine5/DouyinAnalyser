@@ -88,7 +88,8 @@ public class UserController {
         try {
             URI uri = new URI(url);
             String host = uri.getHost();
-            return Objects.equals(host, "v.douyin.com");
+            String path = uri.getPath();
+            return Objects.equals(host, "v.douyin.com") && path.matches("[a-zA-Z0-9]*");
         } catch (URISyntaxException e) {
             return false;
         }
