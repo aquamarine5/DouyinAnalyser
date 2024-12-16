@@ -59,6 +59,9 @@ public class UserController {
     @CrossOrigin(origins = "*")
     @GetMapping("/parse")
     public JSONObject ParseUrlToKey(@RequestParam String url){
+        if (!isValidUrl(url)) {
+            return UnifiedResponse.Failed("Invalid URL");
+        }
         RestTemplate restTemplate = new RestTemplate(new NoRedirectSimpleClientHttpRequestFactory());
         logger.info("URL: {}", url);
         ResponseEntity<String> response=restTemplate.getForEntity(url,String.class);
@@ -81,5 +84,20 @@ public class UserController {
     @GetMapping("/list")
     public JSONObject ListAllUsers(){
         return UnifiedResponse.Success(new JSONObject().fluentPut("list",jdbcTemplate.queryForList("SELECT id,name FROM userinfo")));
+    }
+
+    private static final List<String> ALLOWED_DOMAINS = Arrays.asList(
+            "example.com",
+            "anotherexample.com"
+    );
+
+    private boolean isValidUrl(String url) {
+        try {
+            URI uri = new URI(url);
+            String host = uri.getHost();
+            return ALLOWED_DOMAINS.contains(host);
+        } catch (Exception e) {
+            return false;
+        }
     }
 }
