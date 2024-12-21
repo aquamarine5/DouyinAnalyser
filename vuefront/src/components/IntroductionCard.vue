@@ -3,6 +3,7 @@
  * Copyright (c) 2024 by @aquamarine5, RC. All Rights Reversed.
 -->
 <script setup lang="js">
+import '@/assets/fonts/font.css';
 import LineMdEmojiSmileWinkTwotone from '~icons/line-md/emoji-smile-wink-twotone?width=28px&height=28px';
 </script>
 
@@ -49,6 +50,7 @@ import LineMdEmojiSmileWinkTwotone from '~icons/line-md/emoji-smile-wink-twotone
 }
 
 .introduction_text {
+    font-family: "Gilroy", sans-serif;
     color: white;
     font-size: smaller;
     font-weight: 500;

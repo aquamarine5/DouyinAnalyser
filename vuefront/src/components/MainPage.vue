@@ -98,6 +98,6 @@ axios.get("http://dy.aquamarine5.fun/api/user/list").then(response => {
 }
 
 .img {
-    max-width: 90%;
+    width: 100%;
 }
 </style>

@@ -6,6 +6,7 @@
 import { ref } from 'vue';
 import LucideClipboardCopy from '~icons/lucide/clipboard-copy?width=18px&height=18px';
 import LucideClipboardCheck from '~icons/lucide/clipboard-check?width=18px&height=18px';
+import { ElMessage } from 'element-plus';
 
 const props = defineProps({
     code: {
@@ -14,13 +15,31 @@ const props = defineProps({
     }
 });
 
-function copyToClipboard() {
-    navigator.clipboard.writeText(props.code);
+async function copyToClipboard() {
     if (copied.value) return;
-    copied.value = true;
-    setTimeout(() => {
-        copied.value = false;
-    }, 1000);
+    
+    try {
+        if (!navigator.clipboard) {
+            // 创建临时输入框
+            const textArea = document.createElement('textarea');
+            textArea.value = props.code;
+            document.body.appendChild(textArea);
+            textArea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textArea);
+        } else {
+            await navigator.clipboard.writeText(props.code);
+        }
+        
+        copied.value = true;
+        ElMessage.success('复制成功');
+        setTimeout(() => {
+            copied.value = false;
+        }, 1000);
+    } catch (err) {
+        ElMessage.error('复制失败，请手动复制');
+        console.error('复制失败:', err);
+    }
 }
 const copied = ref(false);
 </script>
@@ -40,6 +59,9 @@ const copied = ref(false);
 <style scoped>
 code {
     padding-left: 6px;
+    overflow-y: hidden;
+    white-space: nowrap;
+    display: block;
 }
 
 .code-block {
@@ -49,7 +71,6 @@ code {
     justify-content: space-between;
     border-radius: 6px;
     padding: 8px;
-    overflow-y: hidden;
     margin: 2px;
     width: 100%;
 }
