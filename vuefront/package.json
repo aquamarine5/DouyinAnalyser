@@ -1,6 +1,6 @@
 {
   "name": "vuefront",
-  "version": "0.3.0",
+  "version": "0.5beta",
   "private": true,
   "type": "module",
   "scripts": {
@@ -11,8 +11,6 @@
     "deploy": "remote_deploy.cmd"
   },
   "dependencies": {
-    "@iconify-json/line-md": "^1.2.2",
-    "@iconify-json/mdi": "^1.2.1",
     "axios": "^1.7.9",
     "element-plus": "^2.9.0",
     "unplugin-icons": "^0.21.0",
@@ -21,6 +19,9 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.14.0",
+    "@iconify-json/line-md": "^1.2.3",
+    "@iconify-json/lucide": "^1.2.19",
+    "@iconify-json/mdi": "^1.2.1",
     "@vitejs/plugin-vue": "^5.2.1",
     "eslint": "^9.14.0",
     "eslint-plugin-vue": "^9.30.0",

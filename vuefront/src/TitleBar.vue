@@ -5,7 +5,7 @@
 <script setup>
 import LineMdTiktok from '~icons/line-md/tiktok?width=32px&height=32px';
 import LineMdGithubTwotone from '~icons/line-md/github-twotone?width=32px&height=32px';
-
+import pkginfo from '../package.json';
 import '@/assets/fonts/font.css';
 import { useRouter } from 'vue-router';
 const router = useRouter()
@@ -29,7 +29,7 @@ function jumpToDouyin() {
             <div class="app_title" @click="gotoHome">
                 <slot></slot>
                 <div class="topbar_version">
-                    v0.4
+                    {{ pkginfo.version }}
                 </div>
             </div>
 
