@@ -60,6 +60,8 @@ public class DouyinAnalyserApplication {
             }
             jdbcTemplate.update("INSERT INTO `counts` (date, userid, likecount) VALUES (?, ?, ?) AS newvalue ON DUPLICATE KEY UPDATE likecount = newvalue.likecount",
                     numberDate, userlist.getInt("id"), likecount);
+
+            logger.info("Updating like date {} likecount {}", key,likecount);
         }
         httpClient.close();
     }

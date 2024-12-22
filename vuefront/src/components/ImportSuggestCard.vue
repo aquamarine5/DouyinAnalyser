@@ -36,13 +36,12 @@ function click() {
 
 .importsuggest_bg {
     cursor: pointer;
-    background-color: #04d4fd;
+    background-color: #03a8f4a8;
     display: flex;
     align-items: center;
     padding: 10px 7px;
     border-radius: 10px;
     font-weight: 400;
-
 }
 
 .importsuggest_title {

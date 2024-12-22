@@ -36,7 +36,6 @@ function addUser() {
 }
 function parseKey() {
     function returnUrl() {
-
         const regex = /https:\/\/v\.douyin\.com\/[a-zA-Z0-9]+\//;
         const match = inputSharedTokenValue.value.match(regex);
         return match ? match[0] : null;
