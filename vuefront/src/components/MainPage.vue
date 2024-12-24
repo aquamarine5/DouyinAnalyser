@@ -44,11 +44,19 @@ axios.get("http://dy.aquamarine5.fun/api/user/list").then(response => {
         <IntroductionCard />
         <div class="selecting_container">
             <LineMdPersonSearchTwotone class="selecting_icon" />
+
             <div>
-                <ElSelect v-model="inputIDValue" placeholder="选择用户" @change="handleSelect">
-                    <ElOption v-for="user in allUserIds" :key="user.id" :label="user.name" :value="user.id" />
-                </ElSelect>
-                <ElInput placeholder="输入AnalyserID" v-model="inputIDValue" />
+                <div class="selecting_title">
+                    选择查看的用户：
+                </div>
+                <div class="selecting_inputvalue">
+                    <ElSelect v-model="inputIDValue" placeholder="选择用户" @change="handleSelect"
+                        class="selecting_username">
+                        <ElOption v-for="user in allUserIds" :key="user.id" :label="user.name" :value="user.id" />
+                    </ElSelect>
+                    或
+                    <ElInput placeholder="输入AnalyserID" v-model="inputIDValue" />
+                </div>
             </div>
         </div>
         <ImportSuggestCard />
@@ -64,6 +72,24 @@ axios.get("http://dy.aquamarine5.fun/api/user/list").then(response => {
 .selecting_icon {
     min-height: 28px;
     min-width: 28px;
+}
+
+.selecting_title {
+    font-size: medium;
+    font-weight: 600;
+    padding-bottom: 6px;
+    padding-top: 3px;
+    padding-left: 1px;
+}
+
+.selecting_inputvalue {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.selecting_username {
+    min-width: 150px;
 }
 
 .img_container {

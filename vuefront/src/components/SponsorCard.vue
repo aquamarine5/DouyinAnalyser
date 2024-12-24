@@ -19,9 +19,9 @@ function click() {
 </script>
 
 <template>
-    <div class="sponsor_bg">
+    <div class="sponsor_bg" @click="click">
         <LineMdCoffeeHalfEmptyTwotoneLoop class="sponsor_icon" />
-        <div class="sponsor_container" @click="click">
+        <div class="sponsor_container">
             <div class="sponsor_title">
                 此工具帮到你啦？
             </div>

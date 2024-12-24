@@ -17,20 +17,9 @@ const props = defineProps({
 
 async function copyToClipboard() {
     if (copied.value) return;
-    
+
     try {
-        if (!navigator.clipboard) {
-            // 创建临时输入框
-            const textArea = document.createElement('textarea');
-            textArea.value = props.code;
-            document.body.appendChild(textArea);
-            textArea.select();
-            document.execCommand('copy');
-            document.body.removeChild(textArea);
-        } else {
-            await navigator.clipboard.writeText(props.code);
-        }
-        
+        await navigator.clipboard.writeText(props.code);
         copied.value = true;
         ElMessage.success('复制成功');
         setTimeout(() => {

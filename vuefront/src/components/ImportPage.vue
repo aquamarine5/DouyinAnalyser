@@ -26,6 +26,22 @@ function addUser() {
         });
         return
     }
+    if (inputSharedTokenValue.value == "" || inputUsernameValue.value == "") {
+        ElNotification({
+            title: "错误",
+            message: "请填写完整",
+            type: "error"
+        });
+        return
+    }
+    if (inputUsernameValue.value.length > 20) {
+        ElNotification({
+            title: "错误",
+            message: "用户名过长",
+            type: "error"
+        });
+        return
+    }
     fetch(`http://dy.aquamarine5.fun/api/user/add?username=${inputSharedTokenValue.value}&key=${userkey.value}`, {
         method: "POST"
     }).then(response => response.json())

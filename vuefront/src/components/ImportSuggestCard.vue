@@ -12,9 +12,9 @@ function click() {
 </script>
 
 <template>
-    <div class="importsuggest_bg">
+    <div class="importsuggest_bg" @click="click">
         <LineMdPersonAddTwotone class="importsuggest_icon" />
-        <div class="importsuggest_container" @click="click">
+        <div class="importsuggest_container">
             <div class="importsuggest_title">
                 还没有导入用户？
             </div>
