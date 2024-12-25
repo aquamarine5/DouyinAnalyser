@@ -63,7 +63,7 @@ if (!System.getenv('GITHUB_ACTIONS')) {
             ssh.run{
                 session(remotes.webServer){
                     put from: file("build/libs/DouyinAnalyser-${version}.jar"), into: '/root/workspace/DouyinAnalyser.jar'
-                    execute "export MYSQL_PASSWORD=${project.mysqlPassword} ; pm2 start --name DouyinAnalyser java -- -jar /root/workspace/DouyinAnalyser.jar -DMYSQL_PASSWORD=${project.mysqlPassword} > /root/workspace/DouyinAnalyser.log 2>&1 &"
+                    execute "export MYSQL_PASSWORD=${project.mysqlPassword} ; pm2 start --name DouyinAnalyser java -- -Xms256m -Xmx512m -jar /root/workspace/DouyinAnalyser.jar -DMYSQL_PASSWORD=${project.mysqlPassword} > /root/workspace/DouyinAnalyser.log 2>&1 &"
                 }
             }
         }
@@ -73,9 +73,8 @@ if (!System.getenv('GITHUB_ACTIONS')) {
         doLast {
             ssh.run {
                 session(remotes.webServer) {
-                    execute 'pm2 stop DouyinAnalyser || true'
                     put from: file("build/libs/DouyinAnalyser-${version}.jar"), into: '/root/workspace/DouyinAnalyser.jar'
-                    execute "export MYSQL_PASSWORD=${project.mysqlPassword} ; pm2 start nohup java -jar /root/workspace/DouyinAnalyser.jar -DMYSQL_PASSWORD=${project.mysqlPassword} --name DouyinAnalyser"
+                    execute "export MYSQL_PASSWORD=${project.mysqlPassword} ; pm2 start --name DouyinAnalyser java -- -Xms128m -Xmx256m -jar /root/workspace/DouyinAnalyser.jar -DMYSQL_PASSWORD=${project.mysqlPassword}"
                 }
             }
         }

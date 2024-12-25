@@ -23,7 +23,13 @@ app.use(express.json());
             if (!data) {
                 return res.status(400).json({ error: 'Data is required' });
             }
-            res.setHeader('Cache-Control', 'max-age=3600, s-maxage=3600');
+            if ('no-cache' in req.query) {
+                res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+                res.setHeader('Pragma', 'no-cache');
+                res.setHeader('Expires', '0');
+            } else {
+                res.setHeader('Cache-Control', 'max-age=3600, s-maxage=3600');
+            }
             res.setHeader('Content-Type', 'image/svg+xml');
             const html = renderChart(data);
             res.send(html);

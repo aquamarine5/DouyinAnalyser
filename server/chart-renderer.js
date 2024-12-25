@@ -52,7 +52,7 @@ export function renderChart(data) {
     const deltaMaxValues = Math.max(...deltavalues);
     const avgDeltaValues = deltavalues.reduce((a, b) => a + b) / deltavalues.length;
     deltavalues.push(avgDeltaValues);
-    const option = {
+    chart.setOption({
         backgroundColor: '#ffffff',
         title: {
             top: 10,
@@ -68,12 +68,23 @@ export function renderChart(data) {
             top: 70,
             left: 60,
             right: 60,
-            bottom: 20,
-            show: true,
-            backgroundColor: "#ffffff",
-            borderRadius: 8,
-            borderColor: "transparent"
+            bottom: 30,
+            show: false
         },
+        graphic: [{
+            type: 'rect',
+            shape: {
+                x: 0,
+                y: 0,
+                width: 450,
+                height: 300,
+                r: 8
+            },
+            style: {
+                fill: '#ffffff'
+            },
+            z: -1
+        }],
         tooltip: {
             trigger: 'axis'
         },
@@ -111,11 +122,7 @@ export function renderChart(data) {
                         params.value :
                         '';
                 }
-
-            },
-            //yAxisIndex: 0,
-            //symbol: 'circle',
-            //symbolSize: 6,
+            }
         }, {
             type: 'bar',
             yAxisIndex: 1,
@@ -131,7 +138,7 @@ export function renderChart(data) {
             label: {
                 show: true,
                 position: 'top',
-                fontSize: 12,
+                fontSize: 10,
                 color: '#2f4554',
                 formatter: (params) => {
                     return params.dataIndex === deltavalues.length - 1 ?
@@ -140,10 +147,8 @@ export function renderChart(data) {
                 }
             }
         }],
-        animation: true
-    };
-
-    chart.setOption(option);
+        animation: true,
+    });
 
     const svgStr = chart.renderToSVGString();
 
