@@ -10,6 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.core.env.Environment;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.scheduling.annotation.EnableScheduling;
@@ -30,9 +31,11 @@ public class DouyinAnalyserApplication {
 
     private final JdbcTemplate jdbcTemplate;
     private final Logger logger = LoggerFactory.getLogger(DouyinAnalyserApplication.class);
+    private final Environment environment;
 
-    public DouyinAnalyserApplication(JdbcTemplate jdbcTemplate) {
+    public DouyinAnalyserApplication(JdbcTemplate jdbcTemplate, Environment environment) {
         this.jdbcTemplate = jdbcTemplate;
+        this.environment = environment;
     }
 
     public static void main(String[] args) {
@@ -48,8 +51,9 @@ public class DouyinAnalyserApplication {
             String key = userlist.getString("key");
             logger.info("Updating like count for user {}", key);
             HttpRequest request = HttpRequest.newBuilder()
-                    .uri(URI.create("http://localhost:1132/api/douyin/web/handler_user_profile?sec_user_id=" + key))
+                    .uri(URI.create("https://api.tikhub.io/api/v1/douyin/app/v3/handler_user_profile?sec_user_id=" + key))
                     .GET()
+                    .header("Authorization","Bearer " + environment.getProperty("TIKHUB_TOKEN"))
                     .build();
             HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
             JSONObject jsonResponse = JSONObject.parseObject(response.body());

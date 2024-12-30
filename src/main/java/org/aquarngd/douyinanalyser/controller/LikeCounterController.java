@@ -9,6 +9,7 @@ import com.alibaba.fastjson2.JSONArray;
 import com.alibaba.fastjson2.JSONObject;
 import org.aquarngd.douyinanalyser.DouyinAnalyserApplication;
 import org.aquarngd.douyinanalyser.UnifiedResponse;
+import org.springframework.core.env.Environment;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -29,14 +30,16 @@ import java.time.format.DateTimeFormatter;
 public class LikeCounterController {
 
     private final JdbcTemplate jdbcTemplate;
+    private final Environment environment;
 
-    public LikeCounterController(JdbcTemplate jdbcTemplate) {
+    public LikeCounterController(JdbcTemplate jdbcTemplate, Environment environment) {
         this.jdbcTemplate = jdbcTemplate;
+        this.environment = environment;
     }
 
     @GetMapping("/query")
     public JSONObject getLikeList(@RequestParam int id) {
-        SqlRowSet rowSet = jdbcTemplate.queryForRowSet("SELECT date,likecount FROM counts WHERE userid=? ORDER BY date LIMIT 30", id);
+        SqlRowSet rowSet = jdbcTemplate.queryForRowSet("SELECT date,likecount FROM counts WHERE userid=? ORDER BY date LIMIT 90", id);
         JSONArray likeList = new JSONArray();
         while (rowSet.next()) {
             JSONObject like = new JSONObject();
@@ -60,7 +63,12 @@ public class LikeCounterController {
         JSONArray result = new JSONArray();
         while (userlist.next()) {
             String key = userlist.getString("key");
-            HttpRequest request = HttpRequest.newBuilder().uri(URI.create("http://localhost:1132/api/douyin/web/handler_user_profile?sec_user_id=" + key)).GET().build();
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(URI.create("https://api.tikhub.io/api/v1/douyin/app/v3/handler_user_profile?sec_user_id=" + key))
+                    .GET()
+                    .header("Authorization","Bearer " + environment.getProperty("TIKHUB_TOKEN"))
+                    .build();
+
             HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
             JSONObject jsonResponse = JSONObject.parseObject(response.body());
             String numberDate = LocalDate.now().format(DateTimeFormatter.ofPattern("yyMMdd"));

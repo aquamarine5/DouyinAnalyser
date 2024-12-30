@@ -63,7 +63,7 @@ if (!System.getenv('GITHUB_ACTIONS')) {
             ssh.run{
                 session(remotes.webServer){
                     put from: file("build/libs/DouyinAnalyser-${version}.jar"), into: '/root/workspace/DouyinAnalyser.jar'
-                    execute "export MYSQL_PASSWORD=${project.mysqlPassword} ; pm2 start --name DouyinAnalyser java -- -Xms256m -Xmx512m -jar /root/workspace/DouyinAnalyser.jar -DMYSQL_PASSWORD=${project.mysqlPassword} > /root/workspace/DouyinAnalyser.log 2>&1 &"
+                    execute "export MYSQL_PASSWORD=${project.mysqlPassword} ; export TIKHUB_TOKEN=${project.tikhubToken} ; pm2 start --name DouyinAnalyser java -- -Xms128m -Xmx256m -jar /root/workspace/DouyinAnalyser.jar -DMYSQL_PASSWORD=${project.mysqlPassword} > /root/workspace/DouyinAnalyser.log 2>&1 &"
                 }
             }
         }
