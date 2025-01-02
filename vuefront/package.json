@@ -1,6 +1,6 @@
 {
   "name": "vuefront",
-  "version": "0.5beta",
+  "version": "0.6",
   "private": true,
   "type": "module",
   "scripts": {
