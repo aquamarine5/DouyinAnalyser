@@ -8,6 +8,7 @@ package org.aquarngd.douyinanalyser.controller;
 import com.alibaba.fastjson2.JSONArray;
 import com.alibaba.fastjson2.JSONObject;
 import org.aquarngd.douyinanalyser.DouyinAnalyserApplication;
+import org.aquarngd.douyinanalyser.DouyinLikeAnalyser;
 import org.aquarngd.douyinanalyser.UnifiedResponse;
 import org.springframework.core.env.Environment;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -30,11 +31,13 @@ import java.time.format.DateTimeFormatter;
 public class LikeCounterController {
 
     private final JdbcTemplate jdbcTemplate;
-    private final Environment environment;
+    private final DouyinAnalyserApplication douyinAnalyserApplication;
+    private final DouyinLikeAnalyser douyinLikeAnalyser;
 
-    public LikeCounterController(JdbcTemplate jdbcTemplate, Environment environment) {
+    public LikeCounterController(JdbcTemplate jdbcTemplate, DouyinAnalyserApplication douyinAnalyserApplication, DouyinLikeAnalyser douyinLikeAnalyser) {
         this.jdbcTemplate = jdbcTemplate;
-        this.environment = environment;
+        this.douyinAnalyserApplication = douyinAnalyserApplication;
+        this.douyinLikeAnalyser = douyinLikeAnalyser;
     }
 
     @GetMapping("/query")
@@ -47,9 +50,10 @@ public class LikeCounterController {
             like.put("count", rowSet.getInt("likecount"));
             likeList.add(like);
         }
-        SqlRowSet userInfo = jdbcTemplate.queryForRowSet("SELECT `name` FROM userinfo WHERE `id`=?", id);
+        SqlRowSet userInfo = jdbcTemplate.queryForRowSet("SELECT `name`,isLikePublic FROM userinfo WHERE `id`=?", id);
         JSONObject result = new JSONObject();
         if (userInfo.next()) {
+            result.put("permission",userInfo.getBoolean("isLikePublic"));
             result.put("name", userInfo.getString("name"));
         }
         result.put("list", likeList);
@@ -57,32 +61,23 @@ public class LikeCounterController {
     }
 
     @GetMapping("/update")
-    public JSONObject forceUpdate() throws IOException, InterruptedException {
-        HttpClient httpClient = HttpClient.newHttpClient();
-        SqlRowSet userlist = jdbcTemplate.queryForRowSet("SELECT `key`, `id` FROM userinfo");
+    public JSONObject forceUpdate() {
         JSONArray result = new JSONArray();
-        while (userlist.next()) {
-            String key = userlist.getString("key");
-            HttpRequest request = HttpRequest.newBuilder()
-                    .uri(URI.create("https://api.tikhub.io/api/v1/douyin/app/v3/handler_user_profile?sec_user_id=" + key))
-                    .GET()
-                    .header("Authorization","Bearer " + environment.getProperty("TIKHUB_TOKEN"))
-                    .build();
-
-            HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-            JSONObject jsonResponse = JSONObject.parseObject(response.body());
+        douyinLikeAnalyser.analyseAllData((id, likeCount) -> {
             String numberDate = LocalDate.now().format(DateTimeFormatter.ofPattern("yyMMdd"));
-            int likecount = jsonResponse.getJSONObject("data").getJSONObject("user").getIntValue("favoriting_count");
-            if (likecount == 0) {
-                result.add(new JSONObject().fluentPut("id", userlist.getInt("id")).fluentPut("status", "failed with 0 like count"));
-            } else if (likecount == -1) {
-                result.add(new JSONObject().fluentPut("id", userlist.getInt("id")).fluentPut("status", "like list is private"));
-            } else {
-                jdbcTemplate.update("INSERT INTO `counts` (date, userid, likecount) VALUES (?, ?, ?) AS newvalue ON DUPLICATE KEY UPDATE likecount = newvalue.likecount", numberDate, userlist.getInt("id"), likecount);
-                result.add(new JSONObject().fluentPut("id", userlist.getInt("id")).fluentPut("status", "success"));
-            }
-        }
-        httpClient.close();
+            jdbcTemplate.update("INSERT INTO `counts` (date, userid, likecount) VALUES (?, ?, ?) AS newvalue ON DUPLICATE KEY UPDATE likecount = newvalue.likecount",
+                    numberDate, id, likeCount);
+            result.add(new JSONObject()
+                    .fluentPut("userid", id)
+                    .fluentPut("likeCount", likeCount)
+            );
+        });
         return UnifiedResponse.Success(result);
+    }
+
+    @GetMapping("/update_signal")
+    public JSONObject forceUpdateWithoutResponse() throws IOException, InterruptedException {
+        douyinAnalyserApplication.updateLikeCount();
+        return UnifiedResponse.SuccessSignal();
     }
 }

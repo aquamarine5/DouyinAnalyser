@@ -31,43 +31,23 @@ public class DouyinAnalyserApplication {
 
     private final JdbcTemplate jdbcTemplate;
     private final Logger logger = LoggerFactory.getLogger(DouyinAnalyserApplication.class);
-    private final Environment environment;
+    private final DouyinLikeAnalyser douyinLikeAnalyser;
 
-    public DouyinAnalyserApplication(JdbcTemplate jdbcTemplate, Environment environment) {
+    public DouyinAnalyserApplication(JdbcTemplate jdbcTemplate, DouyinLikeAnalyser douyinLikeAnalyser) {
         this.jdbcTemplate = jdbcTemplate;
-        this.environment = environment;
+        this.douyinLikeAnalyser = douyinLikeAnalyser;
     }
 
     public static void main(String[] args) {
         SpringApplication.run(DouyinAnalyserApplication.class, args);
     }
 
-    @Scheduled(cron = "0 10 0 * * *")
+    @Scheduled(cron = "0 1 0 * * *")
     public void updateLikeCount() throws IOException, InterruptedException {
-
-        HttpClient httpClient = HttpClient.newHttpClient();
-        SqlRowSet userlist = jdbcTemplate.queryForRowSet("SELECT `key`, `id` FROM userinfo");
-        while (userlist.next()) {
-            String key = userlist.getString("key");
-            logger.info("Updating like count for user {}", key);
-            HttpRequest request = HttpRequest.newBuilder()
-                    .uri(URI.create("https://api.tikhub.io/api/v1/douyin/app/v3/handler_user_profile?sec_user_id=" + key))
-                    .GET()
-                    .header("Authorization","Bearer " + environment.getProperty("TIKHUB_TOKEN"))
-                    .build();
-            HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-            JSONObject jsonResponse = JSONObject.parseObject(response.body());
+        douyinLikeAnalyser.analyseAllData((id, likeCount) -> {
             String numberDate = LocalDate.now().format(DateTimeFormatter.ofPattern("yyMMdd"));
-            int likecount = jsonResponse.getJSONObject("data").getJSONObject("user").getIntValue("favoriting_count",0);
-            if (likecount == 0) {
-                logger.warn("No like count found for user {}", key);
-                continue;
-            }
             jdbcTemplate.update("INSERT INTO `counts` (date, userid, likecount) VALUES (?, ?, ?) AS newvalue ON DUPLICATE KEY UPDATE likecount = newvalue.likecount",
-                    numberDate, userlist.getInt("id"), likecount);
-
-            logger.info("Updating like date {} likecount {}", key,likecount);
-        }
-        httpClient.close();
+                    numberDate, id, likeCount);
+        });
     }
 }

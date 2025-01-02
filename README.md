@@ -44,7 +44,8 @@ create table dyanalyser.userinfo
     name  text not null,
     `key` text not null,
     id    int auto_increment
-        primary key
+        primary key,
+    isLikePublic boolean not null
 );
 create table dyanalyser.counts
 (

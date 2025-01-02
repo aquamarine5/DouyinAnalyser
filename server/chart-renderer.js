@@ -31,10 +31,8 @@ export function renderChart(data) {
         let date = datalist[i].date
         let month = Math.floor((date % 10000) / 100)
         let day = date % 100
-
         month = month < 10 ? '0' + month : month
         day = day < 10 ? '0' + day : day
-
         categories.push(`${month}/${day}`)
     }
     let values = []
