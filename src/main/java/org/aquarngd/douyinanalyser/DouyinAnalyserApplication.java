@@ -58,8 +58,9 @@ public class DouyinAnalyserApplication {
             HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
             JSONObject jsonResponse = JSONObject.parseObject(response.body());
             String numberDate = LocalDate.now().format(DateTimeFormatter.ofPattern("yyMMdd"));
-            int likecount = jsonResponse.getJSONObject("data").getJSONObject("user").getIntValue("favoriting_count");
-            if (jsonResponse.getIntValue("likeCount", 0) == 0) {
+            int likecount = jsonResponse.getJSONObject("data").getJSONObject("user").getIntValue("favoriting_count",0);
+            if (likecount == 0) {
+                logger.warn("No like count found for user {}", key);
                 continue;
             }
             jdbcTemplate.update("INSERT INTO `counts` (date, userid, likecount) VALUES (?, ?, ?) AS newvalue ON DUPLICATE KEY UPDATE likecount = newvalue.likecount",
