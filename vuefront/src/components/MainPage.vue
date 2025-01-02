@@ -10,13 +10,14 @@ import { ElInput, ElSelect, ElOption } from 'element-plus';
 import { ref } from 'vue';
 import LineMdPersonSearchTwotone from '~icons/line-md/person-search-twotone?width=24px&height=24px';
 import IntroductionCard from './IntroductionCard.vue';
+import LineMdAlertLoop from '~icons/line-md/alert-loop?width=24px&height=24px';
 import SponsorCard from './SponsorCard.vue';
 import CodePaste from './CodePaste.vue'
 import ImportSuggestCard from './ImportSuggestCard.vue';
 const inputIDValue = ref();
 const imgsrcValue = ref("");
 const imgPasteValue = ref("");
-
+const isPermission = ref(false)
 const allUserIds = ref([]);
 
 function setImgSrcValue() {
@@ -32,6 +33,7 @@ function handleSelect(value) {
 axios.get("http://dy.aquamarine5.fun/api/user/list").then(response => {
     console.log(response);
     allUserIds.value = response.data.data.list;
+    isPermission.value = response.data.data.permission
 });
 </script>
 
@@ -44,7 +46,6 @@ axios.get("http://dy.aquamarine5.fun/api/user/list").then(response => {
         <IntroductionCard />
         <div class="selecting_container">
             <LineMdPersonSearchTwotone class="selecting_icon" />
-
             <div>
                 <div class="selecting_title">
                     选择查看的用户：
@@ -55,7 +56,7 @@ axios.get("http://dy.aquamarine5.fun/api/user/list").then(response => {
                         <ElOption v-for="user in allUserIds" :key="user.id" :label="user.name" :value="user.id" />
                     </ElSelect>
                     或
-                    <ElInput placeholder="输入AnalyserID" v-model="inputIDValue" />
+                    <ElInput placeholder="输入AnalyserID" v-model="inputIDValue" @change="handleSelect" />
                 </div>
             </div>
         </div>
@@ -63,12 +64,34 @@ axios.get("http://dy.aquamarine5.fun/api/user/list").then(response => {
         <SponsorCard />
         <div class="img_container" v-if="inputIDValue">
             <img :src="imgsrcValue" class="img" />
+            <div class="permission_warn_div" v-if="isPermission">
+                <LineMdAlertLoop class="permission_warn_icon" />
+                请注意！在最近一次的数据更新内，该用户的喜欢列表设置为了私密！
+            </div>
             <CodePaste :code="imgPasteValue" />
         </div>
     </div>
 </template>
 
 <style scoped>
+.permission_warn_div {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+    width: 100%;
+    padding: 8px;
+    margin: 2px;
+    border-radius: 10px;
+    background-color: yellow;
+    font-size: small;
+}
+
+.permission_warn_icon {
+    min-height: 24px;
+    min-width: 24px;
+    padding-left: 3px;
+}
+
 .selecting_icon {
     min-height: 28px;
     min-width: 28px;
@@ -95,6 +118,7 @@ axios.get("http://dy.aquamarine5.fun/api/user/list").then(response => {
 .img_container {
     flex-direction: column;
     width: 100%;
+    gap: 5px;
     display: flex;
     border-width: 5px;
     border-style: solid;
