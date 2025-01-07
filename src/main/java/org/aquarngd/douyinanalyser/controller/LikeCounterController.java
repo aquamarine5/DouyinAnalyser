@@ -13,10 +13,7 @@ import org.aquarngd.douyinanalyser.UnifiedResponse;
 import org.springframework.core.env.Environment;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 import java.net.URI;
@@ -40,6 +37,7 @@ public class LikeCounterController {
         this.douyinLikeAnalyser = douyinLikeAnalyser;
     }
 
+    @CrossOrigin(origins = "*")
     @GetMapping("/query")
     public JSONObject getLikeList(@RequestParam int id,@RequestParam int limitDate) {
         SqlRowSet rowSet = jdbcTemplate.queryForRowSet("SELECT date,likecount FROM counts WHERE userid=? ORDER BY date LIMIT ?", id,limitDate);
@@ -60,6 +58,7 @@ public class LikeCounterController {
         return UnifiedResponse.Success(result);
     }
 
+    @CrossOrigin(origins = "*")
     @GetMapping("/analyse")
     public JSONObject getAnalyse(@RequestParam int id) {
         SqlRowSet rowSet = jdbcTemplate.queryForRowSet("SELECT MAX(likecount) AS maxLike, MIN(likecount) AS minLike, AVG(likecount) AS avgLike FROM counts WHERE userid=?", id);
@@ -72,6 +71,7 @@ public class LikeCounterController {
         return UnifiedResponse.Success(result);
     }
 
+    @CrossOrigin(origins = "*")
     @GetMapping("/update")
     public JSONObject forceUpdate() {
         JSONArray result = new JSONArray();
@@ -87,6 +87,7 @@ public class LikeCounterController {
         return UnifiedResponse.Success(result);
     }
 
+    @CrossOrigin(origins = "*")
     @GetMapping("/update_signal")
     public JSONObject forceUpdateWithoutResponse() throws IOException, InterruptedException {
         douyinAnalyserApplication.updateLikeCount();

@@ -79,9 +79,18 @@ public class UserController {
     }
 
     @CrossOrigin(origins = "*")
+    @GetMapping("/delete")
+    public JSONObject DeleteUser(@RequestParam int id) {
+        jdbcTemplate.update("DELETE FROM userinfo WHERE id=?", id);
+        return UnifiedResponse.SuccessSignal();
+    }
+
+    @CrossOrigin(origins = "*")
     @GetMapping("/list")
     public JSONObject ListAllUsers() {
-        return UnifiedResponse.Success(new JSONObject().fluentPut("list", jdbcTemplate.queryForList("SELECT id,name FROM userinfo")));
+        return UnifiedResponse.Success(
+                new JSONObject()
+                        .fluentPut("list", jdbcTemplate.queryForList("SELECT id,name FROM userinfo")));
     }
 
     private boolean isValidUrl(String url) {
