@@ -41,8 +41,8 @@ public class LikeCounterController {
     }
 
     @GetMapping("/query")
-    public JSONObject getLikeList(@RequestParam int id) {
-        SqlRowSet rowSet = jdbcTemplate.queryForRowSet("SELECT date,likecount FROM counts WHERE userid=? ORDER BY date LIMIT 90", id);
+    public JSONObject getLikeList(@RequestParam int id,@RequestParam int limitDate) {
+        SqlRowSet rowSet = jdbcTemplate.queryForRowSet("SELECT date,likecount FROM counts WHERE userid=? ORDER BY date LIMIT ?", id,limitDate);
         JSONArray likeList = new JSONArray();
         while (rowSet.next()) {
             JSONObject like = new JSONObject();
@@ -57,6 +57,18 @@ public class LikeCounterController {
             result.put("name", userInfo.getString("name"));
         }
         result.put("list", likeList);
+        return UnifiedResponse.Success(result);
+    }
+
+    @GetMapping("/analyse")
+    public JSONObject getAnalyse(@RequestParam int id) {
+        SqlRowSet rowSet = jdbcTemplate.queryForRowSet("SELECT MAX(likecount) AS maxLike, MIN(likecount) AS minLike, AVG(likecount) AS avgLike FROM counts WHERE userid=?", id);
+        JSONObject result = new JSONObject();
+        if (rowSet.next()) {
+            result.put("maxLike", rowSet.getInt("maxLike"));
+            result.put("minLike", rowSet.getInt("minLike"));
+            result.put("avgLike", rowSet.getDouble("avgLike"));
+        }
         return UnifiedResponse.Success(result);
     }
 
