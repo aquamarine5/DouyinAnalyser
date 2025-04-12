@@ -39,8 +39,8 @@ public class LikeCounterController {
 
     @CrossOrigin(origins = "*")
     @GetMapping("/query")
-    public JSONObject getLikeList(@RequestParam int id,@RequestParam int limitDate) {
-        SqlRowSet rowSet = jdbcTemplate.queryForRowSet("SELECT date,likecount FROM counts WHERE userid=? ORDER BY date LIMIT ?", id,limitDate);
+    public JSONObject getLikeList(@RequestParam int id, @RequestParam(defaultValue = "180") int limitDate) {
+        SqlRowSet rowSet = jdbcTemplate.queryForRowSet("SELECT date,likecount FROM counts WHERE userid=? ORDER BY date LIMIT ?", id, limitDate);
         JSONArray likeList = new JSONArray();
         while (rowSet.next()) {
             JSONObject like = new JSONObject();
@@ -51,7 +51,7 @@ public class LikeCounterController {
         SqlRowSet userInfo = jdbcTemplate.queryForRowSet("SELECT `name`,isLikePublic FROM userinfo WHERE `id`=?", id);
         JSONObject result = new JSONObject();
         if (userInfo.next()) {
-            result.put("permission",userInfo.getBoolean("isLikePublic"));
+            result.put("permission", userInfo.getBoolean("isLikePublic"));
             result.put("name", userInfo.getString("name"));
         }
         result.put("list", likeList);
