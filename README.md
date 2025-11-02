@@ -5,6 +5,8 @@
 [![codebeat badge](https://codebeat.co/badges/5e8660c4-55d3-4381-8430-520ca63d3666)](https://codebeat.co/projects/github-com-aquamarine5-douyinanalyser-main)
 
 想知道自己抖音每天点了多少赞？来试试`DouyinAnalyser`吧👉 [dy.aquamarine5.fun](http://dy.aquamarine5.fun)
+> [!IMPORTANT]
+> 因为昂贵的服务器费用和几乎无人在意的原因，`dy.aquamarine5.fun`的服务器资源已被释放且无法访问。
 
 ![my analysis](http://dy.aquamarine5.fun/server/render?id=1)
 
